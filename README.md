@@ -147,7 +147,7 @@ Pada pohon pembagian biner `10.67.0.0/21` berikut, **5 subnet yang dilalui jalur
 4. **Subnet #20 (`10.67.4.116/30`)**: Link P2P `Gendou` $\leftr\rightarrow$ `Shigeru`
 5. **Subnet #13 (`10.67.4.80/29`)**: LAN Switch-Monolith (`Shigeru`, lokasi `Armisael`)
 
-![Pohon IP VLSM dengan Lingkaran Jalur Dummy-Plug ke Armisael](images/pohon_ip_vlsm.png)
+![Pohon IP VLSM dengan Lingkaran Jalur Dummy-Plug ke Armisael](images/babak-1/1-tree.png)
 
 ---
 
@@ -215,7 +215,13 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 #### 2.2 Verifikasi Konektivitas Antar-Router
 Setelah konfigurasi IP dan IP forwarding, dilakukan pengujian konektivitas antar-router dengan perintah `ping` dan `ip -br a` dari satu ujung link ke ujung lainnya. Semua router berhasil saling terhubung, memastikan jalur komunikasi antar-router berfungsi dengan baik.
 
-![Verifikasi Konektivitas](./images/verifikasi_konektivitas.png)
+![Verifikasi Konektivitas](images/babak-1/2-pingroute.png)
+
+
+![Verifikasi Konektivitas](images/babak-1/2-ipbr.png)
+
+
+
 
 ---
 
@@ -280,7 +286,7 @@ Diberikan IP dan gateway sementara pada node uji (Armisael, Lilith, Sachiel, dan
 
 Pengujian ping dari Armisael (10.67.4.83) ke Lilith (10.67.4.74), Sachiel (10.67.3.130), dan Comm-Net (10.67.2.2) berhasil seluruhnya.
 
-![Pengujian Konektivitas Antar-Node](./images/pengujian_konektivitas.png)
+![Pengujian Konektivitas Antar-Node](images/babak-1/3-armisael.png)
 
 ### 4. NAT Masquerade & DNS Resolution
 
@@ -307,7 +313,11 @@ Kedua bagian ditambahkan pada skrip `/root/init.sh` agar otomatis diterapkan saa
 #### 4.2 Verifikasi Akses Internet, DNS & Counter Rule NAT
 Pengujian `ping 8.8.8.8` dan `ping deb.debian.org` dari Armisael dan Lilith berhasil mendapatkan balasan, disertai bukti bertambahnya packet/byte counter pada rule MASQUERADE melalui perintah `iptables -t nat -L POSTROUTING -v -n`
 
-![Verifikasi Akses Internet & Counter Rule NAT](./images/verifikasi_nat.png)
+![Verifikasi Akses Internet & Counter Rule NAT](images/babak-1/4-masquerade.png)
+
+![Verifikasi Akses Internet & Counter Rule NAT](images/babak-1/4-pinglith.png)
+
+![Verifikasi Akses Internet & Counter Rule NAT](images/babak-1/4-pingsael.png)
 
 ---
 
@@ -349,7 +359,10 @@ iptables -t nat -A POSTROUTING -s 10.67.0.0/21 -o eth0 -j MASQUERADE
 #### 5.2 Verifikasi iptables -S & Ping Internet dari Armisael
 Dilakukan verifikasi output `iptables -S` pada Gendou untuk memastikan policy INPUT DROP dan FORWARD DROP aktif beserta ketujuh rule di atas, serta pengujian ping 8.8.8.8 dari Armisael (10.67.4.83) yang tetap berhasil.
 
-![Verifikasi iptables -S & Ping Internet dari Armisael](./images/verifikasi_firewall.png)
+![Verifikasi iptables -S & Ping Internet dari Armisael](images/babak-1/5-iptables.png)
+
+
+![Verifikasi iptables -S & Ping Internet dari Armisael](images/babak-1/5-pingnet.png)
 
 ---
 
@@ -381,7 +394,10 @@ Konfigurasi serupa diterapkan pada seluruh node non-router lainnya sesuai tabel 
 #### 6.2 Verifikasi ip -br a dan Ping ke Gateway di Unit-01
 Dilakukan pengecekan ip -br a pada Unit-01 `(10.67.4.66/29)` serta pengujian ping menuju gateway-nya yaitu router Misato `(10.67.4.65)` dengan hasil berhasil tanpa packet loss.
 
-![Verifikasi ip -br a & Ping ke Gateway di Unit-01](./images/verifikasi_unit01.png)
+![Verifikasi ip -br a & Ping ke Gateway di Unit-01](images/babak-1/6-ipbr.png)
+
+![Verifikasi ip -br a & Ping ke Gateway di Unit-01](images/babak-1/6-unit01.png)
+
 
 ---
 
@@ -417,11 +433,20 @@ echo "Halo Melchior dari Lilith" | nc -w 1 10.67.4.60 5000
 
 Dan pesan tersebut tampil pada masing-masing terminal node penerima menggunakan `cat /root/*.log`:
 - Magi-Casper 
-![Pesan diterima di Magi-Casper](./images/magi_casper.png)
+
+![Pesan diterima di Magi-Casper](images/babak-1/7-casper.png)
+
+
 - Magi-Balthasar (port 5000 & 5001)
-![Pesan diterima di Magi-Balthasar](./images/magi_balthasar.png)
+
+
+![Pesan diterima di Magi-Balthasar](images/babak-1/7-balthasar.png)
+
+
 - Magi-Melchior
-![Pesan diterima di Magi-Melchior](./images/magi_melchior.png)
+
+
+![Pesan diterima di Magi-Melchior](images/babak-1/7-melchior.png)
 
 ---
 
@@ -477,6 +502,8 @@ Dari node `Lilith (10.67.4.74) ` menggunakan nc:
  **3. Koneksi ke 10.67.4.106 8080 (Tokyo3-Core)** langsung membalas syifa imutz.
 
  **4. Koneksi ke port yang tidak dilayani seperti nc -vz 10.67.4.106 22** langsung ditolak (Connection refused) tanpa menggantung (hang), karena kedua server merespons dengan paket TCP RST untuk port yang tertutup.
+
+ ![Pengujian Koneksi Listener Pen-Pen & Tokyo3-Core](images/babak-1/8-welcome.png)
 
 
 ---
@@ -583,7 +610,7 @@ ip rule
 
 Setelah hanya tersisa prioritas standar (0: local, 32766: main, dan 32767: default), dilakukan pengujian ulang dari Lilith (10.67.4.74) ke Armisael (10.67.4.83) berupa`ping -c 3 10.67.4.83`
 
-![Hasil Pengujian Ping dari Lilith ke Armisael](./images/ping_lilith_armisael.png)
+![Hasil Pengujian Ping dari Lilith ke Armisael](images/babak-2/9-lisael.png)
 
 Hasil pengujian menunjukkan seluruh paket echo-reply dari Armisael kembali diterima oleh Lilith.
 
@@ -654,7 +681,7 @@ ping -c 3 8.8.8.8
 
 Hasil pengujian menunjukkan seluruh paket ICMP berhasil mendapatkan balasan dari `8.8.8.8` tanpa packet loss.
 
-![Hasil Pengujian Ping dari Unit-01 ke 8.8.8.8](./images/ping-test-results.png)
+![Hasil Pengujian Ping dari Unit-01 ke 8.8.8.8](images/babak-2/10-ping.png)
 
 ---
 
@@ -906,8 +933,10 @@ Simpan jadwal sebagai variabel di awal script Pen-Pen, bernama `PILOT_START`, `P
 
 #### 14.1 Konversi Jam WIB ke UTC & Pemetaan Kategori
 - **WIB = UTC + 7 Jam:**
-  - Pilot (08:00 - 16:00 WIB) $ightarrow$ `01:00` - `09:00` UTC, Hari: `Mon,Tue,Wed,Thu,Fri`.
-  - Staf Geofront (17:00 - 23:00 WIB) $ightarrow$ `10:00` - `16:00` UTC, Hari: `Mon,Tue,Wed,Thu,Fri,Sat,Sun`.
+  - Pilot (08:00 - 16:00 WIB) $
+ightarrow$ `01:00` - `09:00` UTC, Hari: `Mon,Tue,Wed,Thu,Fri`.
+  - Staf Geofront (17:00 - 23:00 WIB) $
+ightarrow$ `10:00` - `16:00` UTC, Hari: `Mon,Tue,Wed,Thu,Fri,Sat,Sun`.
 - **Pengelompokan IP:**
   - **Pilot:** `Unit-01` (`10.67.4.66`), `Unit-02` (`10.67.4.67`), `Unit-00` (`10.67.4.68`), `Sachiel` (`10.67.3.130`).
   - **Staf Geofront:** `Lilith` (`10.67.4.74`), `Adam` (`10.67.4.75`).
@@ -984,7 +1013,10 @@ iptables -A PENPEN_ACCESS -j ACCEPT
   1. **Mengapa limit ICMP harus diletakkan SEBELUM `ESTABLISHED,RELATED`?**
      Linux netfilter conntrack menganggap paket-paket ICMP `echo-request` dalam satu sesi ping berkelanjutan (id yang sama) sebagai paket berstatus `ESTABLISHED` setelah paket balasan pertama dikirim. Jika rule `ESTABLISHED,RELATED` diletakkan di paling atas, maka paket ping ke-2 s.d. ke-50 akan langsung diizinkan (*bypassing limit*) dan menghasilkan 0% packet loss!
   2. Oleh karena itu, urutan rule yang benar adalah:
-     (1) Loopback $ightarrow$ (2) `echo-request limit 5/s ACCEPT` $ightarrow$ (3) `echo-request DROP` $ightarrow$ (4) `ESTABLISHED,RELATED ACCEPT`.
+     (1) Loopback $
+ightarrow$ (2) `echo-request limit 5/s ACCEPT` $
+ightarrow$ (3) `echo-request DROP` $
+ightarrow$ (4) `ESTABLISHED,RELATED ACCEPT`.
   3. Dengan urutan ini, seluruh paket ping masuk disaring oleh limit dan drop. Sementara paket balasan ping keluar (`echo-reply`, icmptype 0) saat Tokyo3-Core mem-ping host luar tetap diizinkan oleh rule ke-4 tanpa batas!
 
 #### 15.2 Konfigurasi iptables di Tokyo3-Core (/root/tokyo3.sh)
